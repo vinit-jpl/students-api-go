@@ -1,1 +1,1 @@
-student-api-go
+students-api-go
