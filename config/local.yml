@@ -1,0 +1,5 @@
+env: "dev"
+storage_path: "storage/storage.db" # we'll use sqllite db. Filename in sqllite db ends with ".db"
+http_server:
+  address: "localhost:8082"
+  
