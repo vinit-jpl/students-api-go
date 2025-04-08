@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/vinit-jpl/students-api-go/internal/config"
+	"github.com/vinit-jpl/students-api-go/internal/http/handlers/student"
 )
 
 func main() {
@@ -22,9 +23,7 @@ func main() {
 
 	// setup router
 	router := http.NewServeMux()
-	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome To Students API!"))
-	})
+	router.HandleFunc("POST /api/students", student.New()) // register the student handler
 
 	// setup server
 	server := http.Server{
