@@ -9,11 +9,12 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/vinit-jpl/students-api-go/internal/storage"
 	"github.com/vinit-jpl/students-api-go/internal/types"
 	"github.com/vinit-jpl/students-api-go/internal/utils/response"
 )
 
-func New() http.HandlerFunc {
+func New(storage storage.Storage) http.HandlerFunc {
 	slog.Info("Creating a student")
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -37,6 +38,19 @@ func New() http.HandlerFunc {
 			return
 		} // this will return an error if the struct is not valid
 
-		response.WriteJson(w, http.StatusCreated, map[string]string{"success": "ok"})
+		lastId, err := storage.CreateStudent(
+			student.Name,
+			student.Email,
+			student.Age,
+		)
+
+		slog.Info("user created successfully", slog.String("userId", fmt.Sprint(lastId)))
+
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		response.WriteJson(w, http.StatusCreated, map[string]int64{"id": lastId})
 	}
 }

@@ -34,3 +34,28 @@ func New(cfg *config.Config) (*Sqlite, error) { // create a new sqlite connectio
 		Db: db,
 	}, nil // returning a pointer to the Sqlite struct
 }
+
+func (s *Sqlite) CreateStudent(name string, email string, age int) (int64, error) {
+
+	stmt, err := s.Db.Prepare("INSERT INTO students (name, email, age) VALUES (?, ?, ?)") // passing "?" to prevent sql injection
+
+	if err != nil {
+		return 0, err
+	}
+
+	defer stmt.Close()
+
+	result, err := stmt.Exec(name, email, age)
+
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := result.LastInsertId() // this will return the last inserted id and error
+
+	if err != nil {
+		return 0, err
+	}
+
+	return lastId, nil
+}
