@@ -86,3 +86,34 @@ func (s *Sqlite) GetStudentById(id int64) (types.Student, error) {
 
 	return student, nil // returning the student struct and nil error
 }
+
+func (s *Sqlite) GetStudents() ([]types.Student, error) {
+	stmt, err := s.Db.Prepare("SELECT id, name, email, age FROM students")
+	if err != nil {
+		return nil, err
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close() // close the rows after we are done with it
+
+	var students []types.Student // create a slice of students
+	for rows.Next() {
+		var student types.Student
+		err := rows.Scan(&student.Id, &student.Name, &student.Email, &student.Age) // scan the rows into the student struct
+
+		if err != nil {
+			return nil, err
+		}
+
+		students = append(students, student) // append the student to the slice of students
+	}
+
+	return students, nil // return the slice of students and nil error
+}
